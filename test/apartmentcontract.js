@@ -38,7 +38,7 @@ contract("ApartmentContract", accounts => {
         let name = 'A new contract';
         let totalSum = 5;
         let seller = '0x090ec50a3f1184251E1041E5310F0f324FBD908E';
-        let buyer = '0x0022babb2ffab88cdb4af68ec6e2e2eabdf396a4';
+        let buyer = '0x0022BaBB2FfAb88cDb4aF68EC6E2e2EaBDF396a4';
 
         const result = await this.contract.createContract(name, totalSum, seller, { from: buyer });
         const count = await this.contract.count();
@@ -50,7 +50,28 @@ contract("ApartmentContract", accounts => {
         assert.equal(event.totalSum.toNumber(), totalSum);
         assert.equal(event.paidSum.toNumber(), 0);
         assert.equal(event.seller, seller);
+        assert.equal(event.buyer, buyer);
         assert.equal(event.status, 2);
+    });
+
+    it("checks buyer field", async () => {
+        let name = 'A new contract';
+        let totalSum = 5;
+        let seller = '0x090ec50a3f1184251E1041E5310F0f324FBD908E';
+        let buyer = '0x0022BaBB2FfAb88cDb4aF68EC6E2e2EaBDF396a4';
+        const newContract = await this.contract.createContract(name, totalSum, seller, { from: buyer });
+        assert.notEqual(newContract.tx, undefined);
+
+        const count = await this.contract.count();
+        const c = await this.contract.apartments(count);
+
+        assert.equal(c.id.toNumber(), count.toNumber());
+        assert.equal(c.name, name);
+        assert.equal(c.totalSum.toNumber(), totalSum);
+        assert.equal(c.paidSum.toNumber(), 0);
+        assert.equal(c.seller, seller);
+        assert.equal(c.buyer, buyer);
+        assert.equal(c.status, 2);
     });
 
     it("pays contracts", async () => {
@@ -84,7 +105,7 @@ contract("ApartmentContract", accounts => {
     });
 
     it("cancels contracts", async () => {
-        const id = 3;
+        const id = Number(await this.contract.count()) + 1;
         const name = 'Test contract cancel';
         const totalSum = 3;
         let seller = '0x090ec50a3f1184251E1041E5310F0f324FBD908E';

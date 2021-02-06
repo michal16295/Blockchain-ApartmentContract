@@ -1,7 +1,13 @@
 import React, { Component } from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
 import ApartmentContract from "./contracts/ApartmentContract.json";
 import getWeb3 from "./getWeb3";
 import Contract from './components/Contract';
+import NewContract from './components/NewContract';
 
 import "./App.css";
 
@@ -37,45 +43,22 @@ class App extends Component {
     }
   };
 
-  runExample = async () => {
-    const { accounts, contract } = this.state;
-    console.log({ accounts, contract });
-
-    await contract.methods.createContract(2, "0x61D4Edc59Bbf5DD72C6Ed45db0CA349Fef159850").send({ from: accounts[0] });
-    await contract.methods.addPayment().send({ from: accounts[0], value: 10000, gas: 100000, to: '0x61D4Edc59Bbf5DD72C6Ed45db0CA349Fef159850' });
-    /*
-    send({
-      from?: string | number;
-      to?: string;
-      value?: number | string | BN;
-      gas?: number | string;
-      gasPrice?: number | string | BN;
-      data?: string;
-      nonce?: number;
-      chainId?: number;
-      common?: Common;
-      chain?: string;
-      hardfork?: string;
-    })
-    */
-    // Stores a given value, 5 by default.
-    // await contract.methods.set(5).send({ from: accounts[0] });
-
-    // Get the value from the contract to prove it worked.
-    const response = await contract.methods.getDifference().call();
-    console.log(response);
-
-    // Update state with the result.
-    this.setState({ storageValue: response });
-  };
-
   render() {
     if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+      return <center>Loading Web3, accounts, and contract...</center>;
     }
     return (
       <div className="App">
-        <Contract contract={this.state.contract} accounts={this.state.accounts} web3={this.state.web3} />
+        <Router>
+          <Switch>
+            <Route path="/new">
+              <NewContract contract={this.state.contract} accounts={this.state.accounts} web3={this.state.web3} />
+            </Route>
+            <Route path="/">
+              <Contract contract={this.state.contract} accounts={this.state.accounts} web3={this.state.web3} />
+            </Route>
+          </Switch>
+        </Router>
       </div>
     );
   }

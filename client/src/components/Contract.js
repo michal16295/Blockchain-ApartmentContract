@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import constants from '../utils/constants';
+import Accounts from './Accounts';
 
 const Contract = ({ contract, accounts, web3 }) => {
+    const [errorMsg, setErrorMsg] = useState(null);
     const [paymentActive, setPaymentActive] = useState(false);
     const [contractLoading, setContractLoading] = useState(false);
     const [contractId, setContractId] = useState(null);
@@ -8,7 +12,7 @@ const Contract = ({ contract, accounts, web3 }) => {
     const [balance, setBalance] = useState(0);
     const [account, setAccount] = useState(null);
     const [details, setDetails] = useState({
-        id: 0,
+        id: null,
         name: '-',
         totalSum: 0,
         paidSum: 0,
@@ -23,28 +27,21 @@ const Contract = ({ contract, accounts, web3 }) => {
         const fetchWalletDetails = async () => {
             if (account) {
                 let b = await web3.eth.getBalance(account);
+                b = web3.utils.fromWei(b, 'ether');
                 setBalance(b);
             }
         }
         fetchWalletDetails();
     });
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     const statusNames = ["Cancelled", "Finished", "Active"];
     const status = details.status < 0 ? "Unknown" : statusNames[details.status];
-
-    const onWalletClick = a => {
-        setAccount(a);
-    }
 
     const changeContractId = e => {
         setContractId(Number(e.target.value));
     }
 
-    const onContractClick = () => {
+    const onLoadContractClick = () => {
         if (contractId > 0) {
             const fetchContractDetails = async () => {
                 setContractLoading(true);
@@ -53,11 +50,11 @@ const Contract = ({ contract, accounts, web3 }) => {
                 const isActive = await contract.methods.isActive(contractId).call();
 
                 const d = {
-                    id: apartment.id,
+                    id: Number(apartment.id),
                     name: apartment.name,
-                    totalSum: apartment.totalSum,
-                    paidSum: apartment.paidSum,
-                    diff,
+                    totalSum: web3.utils.fromWei(apartment.totalSum, 'ether'),
+                    paidSum: web3.utils.fromWei(apartment.paidSum, 'ether'),
+                    diff: web3.utils.fromWei(diff, 'ether'),
                     status: apartment.status,
                     isActive,
                     seller: apartment.seller,
@@ -70,13 +67,9 @@ const Contract = ({ contract, accounts, web3 }) => {
         }
     }
 
-    const contractBtnDisabled = contractLoading || contractId <= 0;
+    const loadContractBtnDisabled = contractLoading || contractId <= 0;
 
-    const accountList = accounts && accounts.map(a => {
-        let btnStyle = account === a ? 'btn-primary' : 'btn-outline-primary';
-        let classname = `btn ${btnStyle} btn-sm`;
-        return <button key={a} className={classname} style={{ width: '100%' }} onClick={() => onWalletClick(a)}>{a}</button>
-    });
+    const accountList = <Accounts setAccount={setAccount} accounts={accounts} />;
 
     const contractDetails = (
         <div>
@@ -88,24 +81,34 @@ const Contract = ({ contract, accounts, web3 }) => {
                     <input type="number" className="form-control" id="contractId" placeholder="0" value={contractId} onChange={changeContractId} />
                 </div>
                 <div className="col-auto">
-                    <button type="submit" className="btn btn-primary mb-3" onClick={onContractClick} disabled={contractBtnDisabled}>Load contract</button>
+                    <button type="submit" className="btn btn-primary mb-3" onClick={onLoadContractClick} disabled={loadContractBtnDisabled}>Load contract</button>
                 </div>
             </div>
-            <div>Name: {details.name}</div>
-            <div>Total: {details.totalSum}</div>
-            <div>Paid: {details.paidSum}</div>
-            <div>Difference: {details.diff}</div>
-            <div>Active: {details.isActive ? 'Yes' : 'No'}</div>
-            <div>Status: {status}</div>
-            <div>Seller: {details.seller}</div>
-            <div>Buyer: {details.buyer}</div>
+            {details.id < 1
+                ?
+                details.id == null ?
+                    <div className="alert alert-info" role="alert">Enter contract ID and load first</div>
+                    : <div className="alert alert-danger" role="alert">Contract not found</div>
+                :
+                <div>
+                    <div>ID: {details.id}</div>
+                    <div>Name: {details.name}</div>
+                    <div>Total: {details.totalSum}</div>
+                    <div>Paid: {details.paidSum}</div>
+                    <div>Difference: {details.diff}</div>
+                    <div>Active: {details.isActive ? 'Yes' : 'No'}</div>
+                    <div>Status: {status}</div>
+                    <div>Seller: {details.seller}</div>
+                    <div>Buyer: {details.buyer}</div>
+                </div>
+            }
         </div>
     );
 
     const selectedWallet = (
         <div>
             <div>Address: {account}</div>
-            <div>Balance: {balance}</div>
+            <div>Balance: {balance} <span>Ether</span></div>
         </div>
     );
 
@@ -113,35 +116,45 @@ const Contract = ({ contract, accounts, web3 }) => {
         setAmount(e.target.value);
     }
 
+    const paymentDisabled = paymentActive || !account || amount <= 0 || details.id <= 0;
+
     const onPaymentClick = () => {
-        if (account && amount > 0) {
+        if (!paymentDisabled) {
             const updatePayment = async () => {
                 setPaymentActive(true);
-                await contract.methods.addPayment().send({
-                    from: account, value: amount,
-                });
+                try {
+                    let amountEth = web3.utils.toWei(amount, 'ether');
+                    await contract.methods.addPayment(details.id).send({
+                        from: account, value: amountEth, gas: constants.gasLimit,
+                    });
+                } catch (e) {
+                    setErrorMsg(e.message);
+                }
                 setPaymentActive(false);
             }
             updatePayment();
         }
     }
 
-    const cancelBtnEnbled = details && details.id > 0 && details.buyer === account;
+    const cancelBtnEnbled = details && details.id > 0 && details.buyer === account && !paymentActive;
 
     const onCancelClick = e => {
         if (cancelBtnEnbled) {
             const updatePayment = async () => {
                 setPaymentActive(true);
-                await contract.methods.addPayment().send({
-                    from: account, value: amount,
-                });
+                try {
+                    await contract.methods.setCancelled(details.id).send({
+                        from: account, gas: constants.gasLimit,
+                    });
+                    window.location.reload();
+                } catch (e) {
+                    setErrorMsg(e.message);
+                }
                 setPaymentActive(false);
             }
             updatePayment();
         }
     }
-
-    const paymentDisabled = paymentActive || !account || !amount;
 
     const buttons = (
         <div>
@@ -181,11 +194,16 @@ const Contract = ({ contract, accounts, web3 }) => {
             <div className="row align-items-start">
                 <div className="col">
                     <div>Contract details:</div>
+                    <Link className="btn btn-success btn-sm" to="/new">New Contract</Link>
+                    <p />
                     {contractDetails}
                 </div>
                 <div className="col">
                     <div>Actions:</div>
                     {buttons}
+                    {errorMsg ?
+                        <div className="alert alert-danger" role="alert">{errorMsg}</div>
+                        : null}
                 </div>
             </div>
         </div>
