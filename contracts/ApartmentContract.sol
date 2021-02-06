@@ -11,6 +11,7 @@ contract ApartmentContract {
         uint256 totalSum;
         uint256 paidSum;
         address payable seller;
+        address payable buyer;
         Status status;
     }
 
@@ -22,6 +23,7 @@ contract ApartmentContract {
         uint256 totalSum,
         uint256 paidSum,
         address seller,
+        address buyer,
         Status status
     );
 
@@ -58,6 +60,7 @@ contract ApartmentContract {
             _totalSum,
             0,
             _seller,
+            msg.sender,
             Status.Active
         );
         emit ContractCreated(
@@ -66,6 +69,7 @@ contract ApartmentContract {
             _totalSum,
             0,
             _seller,
+            msg.sender,
             Status.Active
         );
     }
@@ -106,8 +110,8 @@ contract ApartmentContract {
 
     function setCancelled(uint256 _id) public {
         require(apartments[_id].status == Status.Active);
+        require(apartments[_id].buyer == msg.sender);
         apartments[_id].status = Status.Cancelled;
-        //return 90% of the sum to the buyer
 
         emit ContractCancelled(
             _id,

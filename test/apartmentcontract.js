@@ -38,8 +38,9 @@ contract("ApartmentContract", accounts => {
         let name = 'A new contract';
         let totalSum = 5;
         let seller = '0x090ec50a3f1184251E1041E5310F0f324FBD908E';
+        let buyer = '0x0022babb2ffab88cdb4af68ec6e2e2eabdf396a4';
 
-        const result = await this.contract.createContract(name, totalSum, seller);
+        const result = await this.contract.createContract(name, totalSum, seller, { from: buyer });
         const count = await this.contract.count();
 
         assert.equal(count, 2);
@@ -87,12 +88,13 @@ contract("ApartmentContract", accounts => {
         const name = 'Test contract cancel';
         const totalSum = 3;
         let seller = '0x090ec50a3f1184251E1041E5310F0f324FBD908E';
+        let buyer = '0x0022babb2ffab88cdb4af68ec6e2e2eabdf396a4';
 
-        const c = await this.contract.createContract(name, totalSum, seller);
+        const c = await this.contract.createContract(name, totalSum, seller, { from: buyer });
         const c_event = c.logs[0].args;
         assert.equal(c_event.id.toNumber(), id);
 
-        const result = await this.contract.setCancelled(id);
+        const result = await this.contract.setCancelled(id, { from: buyer });
 
         const event = result.logs[0].args;
         assert.equal(event.id.toNumber(), id);
