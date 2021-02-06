@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ApartmentContract from "./contracts/ApartmentContract.json";
 import getWeb3 from "./getWeb3";
+import Contract from './components/Contract';
 
 import "./App.css";
 
@@ -25,7 +26,8 @@ class App extends Component {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
+      console.log({ instance, accounts })
+      this.setState({ web3, accounts, contract: instance });
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -37,12 +39,31 @@ class App extends Component {
 
   runExample = async () => {
     const { accounts, contract } = this.state;
+    console.log({ accounts, contract });
 
+    await contract.methods.createContract(2, "0x61D4Edc59Bbf5DD72C6Ed45db0CA349Fef159850").send({ from: accounts[0] });
+    await contract.methods.addPayment().send({ from: accounts[0], value: 10000, gas: 100000, to: '0x61D4Edc59Bbf5DD72C6Ed45db0CA349Fef159850' });
+    /*
+    send({
+      from?: string | number;
+      to?: string;
+      value?: number | string | BN;
+      gas?: number | string;
+      gasPrice?: number | string | BN;
+      data?: string;
+      nonce?: number;
+      chainId?: number;
+      common?: Common;
+      chain?: string;
+      hardfork?: string;
+    })
+    */
     // Stores a given value, 5 by default.
-    await contract.methods.set(5).send({ from: accounts[0] });
+    // await contract.methods.set(5).send({ from: accounts[0] });
 
     // Get the value from the contract to prove it worked.
-    const response = await contract.methods.get().call();
+    const response = await contract.methods.getDifference().call();
+    console.log(response);
 
     // Update state with the result.
     this.setState({ storageValue: response });
@@ -54,17 +75,7 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 40</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div>
+        <Contract contract={this.state.contract} accounts={this.state.accounts} web3={this.state.web3} />
       </div>
     );
   }
