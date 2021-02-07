@@ -20,3 +20,315 @@
 .App-link {
   color: #09d3ac;
 }
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap");
+/*glabal*/
+:root {
+  --skin-color: #2eb1ed;
+  --bg-black-900: #ffffff;
+  --bg-black-100: #353535;
+  --bg-black-50: #2b2c2f;
+  --bg-opacity: rgba(43, 44, 47, 0.5);
+  --text-black-900: #ffffff;
+  --text-black-700: #ffffff;
+  --text-black-600: #bbbbbb;
+  --outer-shadow: 3px 3px 3px #222327, -3px -3px 3px #363636;
+  --outer-shadow-0: 0 0 0 #222327, 0 0 #363636;
+  --inner-shadow: inset 3px 3px 3px #222327, inset -3px -3px 3px #363636;
+  --inner-shadow-0: inset 0 0 0 #222327, inset 0 0 0 #363636;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  background-color: var(--bg-black-50);
+}
+body.stop-scrolling {
+  overflow-y: hidden;
+}
+*:not(i) {
+  font-family: "Raleway", sans-serif;
+  font-weight: 400;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+:before,
+:after {
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+img {
+  vertical-align: middle;
+  max-width: 100%;
+}
+
+.container {
+  max-width: 1140px;
+  margin: auto;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.justify-content-between {
+  justify-content: space-between;
+}
+.outer-shadow {
+  box-shadow: var(--outer-shadow);
+}
+.inner-shadow {
+  box-shadow: var(--inner-shadow);
+}
+.hover-in-shadow {
+  position: relative;
+  z-index: 1;
+}
+.hover-in-shadow:hover {
+  box-shadow: var(--outer-shadow-0);
+}
+.hover-in-shadow:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+.hover-in-shadow:hover:after {
+  box-shadow: var(--inner-shadow);
+}
+.align-items-center {
+  align-items: center;
+}
+
+.contract .c-50 {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 30px;
+  padding-bottom: 50px;
+}
+.contract .title {
+  padding: 15px 15px;
+  flex: 0 0 100%;
+  max-width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+  margin-top: 40px;
+}
+.contract .title h1 {
+  display: inline-block;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--skin-color);
+  text-transform: uppercase;
+  margin: 0;
+}
+.contract .c-50 .subtitle {
+  padding-bottom: 10px;
+  font-size: 25px;
+  font-weight: 500;
+  color: var(--text-black-900);
+}
+.info .inner,
+.accounts .inner {
+  padding: 20px;
+  word-break: break-all;
+}
+.contract .info-subtitle {
+  font-size: 24px;
+  color: var(--text-black-600);
+}
+.accounts .btn {
+  height: 40px;
+  color: var(--text-black-700);
+  margin-bottom: 5px;
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  padding: 0 15px;
+  line-height: 40px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background-color: var(--bg-black-100);
+}
+.btn-primary {
+  color: var(--skin-color) !important;
+  font-weight: bold;
+}
+.btn:after {
+  border-radius: 10px;
+  border: none;
+}
+.actions,
+.details {
+  padding: 20px;
+  text-align: left;
+}
+.actions h3,
+.details h3 {
+  font-size: 24px;
+  color: var(--bg-black-900);
+  font-weight: 500;
+  padding-bottom: 20px;
+}
+.newBtn {
+  flex: 0 0 100%;
+  max-width: 100%;
+  text-align: center;
+  padding: 15px 0 15px;
+}
+.inner-btn {
+  padding: 10px 25px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--skin-color);
+  background-color: transparent;
+  line-height: 1.5;
+  cursor: pointer;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+}
+.inner-btn:after {
+  border-radius: 30px;
+}
+.c-30 {
+  flex-grow: 1;
+}
+.c-30 label {
+  color: var(--text-black-600);
+  font-weight: 500;
+  font-size: 20px;
+}
+.c-30 input {
+  border-radius: 10px;
+  padding: 5px;
+}
+.alert-info {
+  padding-top: 10px;
+  font-weight: 500;
+  text-align: center;
+  color: #2eb1ed !important;
+}
+.alert-danger {
+  padding-top: 10px;
+  font-weight: 500;
+  text-align: center;
+  color: red;
+}
+.loadBtn {
+  color: var(--skin-color);
+  background-color: var(--bg-black-100);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 5px;
+  cursor: pointer;
+}
+
+/*new contract*/
+.new-contract {
+  margin-top: 40px;
+  padding: 20px;
+}
+.new-contract h1 {
+  font-weight: bold;
+  color: var(--skin-color);
+}
+.new-contract .account-list {
+  padding: 20px;
+  margin: auto;
+}
+.new-contract .account-list .btn {
+  height: 40px;
+  color: var(--text-black-700);
+  margin-bottom: 5px;
+  width: 80%;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  padding: 0 15px;
+  line-height: 40px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background-color: var(--bg-black-100);
+}
+.new-contract .account-list h3 {
+  font-size: 24px;
+  color: var(--text-black-600);
+}
+.new-contract .balance {
+  font-size: 20px;
+  color: var(--text-black-600);
+  font-weight: 500;
+}
+.new-contract .input-group {
+  margin: 0 0 25px;
+  transition: all 0.3s ease;
+  border-radius: 30px;
+}
+.new-contract .input-group:after {
+  border-radius: 30px;
+}
+.new-contract .input-group .input-control {
+  height: 45px;
+  display: block;
+  width: 100%;
+  border-radius: 30px;
+  border: none;
+  background-color: transparent;
+  font-size: 16px;
+  padding: 0 15px;
+  color: var(--text-black-700);
+}
+.new-contract .submit-btn {
+  flex: 0 0 100%;
+  max-width: 100%;
+  text-align: right;
+  padding: 0 15px;
+}
+.new-contract .row .w-100 {
+  padding-top: 20px;
+  flex: 0 0 100%;
+  max-width: 60%;
+  margin: auto;
+}
+.new-contract .send-btn {
+  border-radius: 30px;
+  width: 40%;
+  margin: auto;
+  cursor: pointer;
+}
+.new-contract .send-btn .inner-btn {
+  font-weight: 600;
+  font-size: 21px;
+}
+.new-contract .send-btn:after {
+  border-radius: 30px;
+}
+.data {
+  padding: 10px;
+}
+.data .data-inner {
+  font-size: 16px;
+  color: var(--text-black-700);
+}
+.data .data-inner span {
+  font-weight: bold;
+}
