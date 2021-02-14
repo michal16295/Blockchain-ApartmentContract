@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Accounts from "./Accounts";
 import constants from "../utils/constants";
 
+//New Contract Component
 const NewContract = ({ contract, accounts, web3 }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
@@ -13,6 +14,7 @@ const NewContract = ({ contract, accounts, web3 }) => {
   const [creatingContract, setCreatingContract] = useState(false);
   const [balance, setBalance] = useState(0);
 
+  //Getting wallet details on load
   useEffect(() => {
     const fetchWalletDetails = async () => {
       if (account) {
@@ -37,6 +39,7 @@ const NewContract = ({ contract, accounts, web3 }) => {
     setSeller(e.target.value);
   };
 
+  //Checking if the user can create a new contract
   const submitDisabled =
     !name ||
     totalSum < 1 ||
@@ -45,6 +48,7 @@ const NewContract = ({ contract, accounts, web3 }) => {
     creatingContract ||
     seller === account;
 
+  //Creating a new contract
   const onSubmit = (e) => {
     e.preventDefault();
     const createContract = async () => {

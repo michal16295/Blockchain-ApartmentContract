@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import constants from "../utils/constants";
 import Accounts from "./Accounts";
 
+//Contract component
 const Contract = ({ contract, accounts, web3 }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [paymentActive, setPaymentActive] = useState(false);
@@ -23,6 +24,7 @@ const Contract = ({ contract, accounts, web3 }) => {
     buyer: null,
   });
 
+//Gettinng the wallet details onLoad 
   useEffect(() => {
     const fetchWalletDetails = async () => {
       if (account) {
@@ -43,6 +45,7 @@ const Contract = ({ contract, accounts, web3 }) => {
 
   const onLoadContractClick = () => {
     if (contractId > 0) {
+      //Getting the contract details: apartment, diff and if active
       const fetchContractDetails = async () => {
         setContractLoading(true);
         const apartment = await contract.methods.apartments(contractId).call();
@@ -71,6 +74,7 @@ const Contract = ({ contract, accounts, web3 }) => {
 
   const accountList = <Accounts setAccount={setAccount} accounts={accounts} />;
 
+//Displaying the contract details
   const contractDetails = (
     <div>
       <div className="row">
@@ -141,7 +145,7 @@ const Contract = ({ contract, accounts, web3 }) => {
       )}
     </div>
   );
-
+//displaying the selected wallet
   const selectedWallet = (
     <>
       <div className="info-subtitle">Address: {account}</div>
@@ -158,6 +162,7 @@ const Contract = ({ contract, accounts, web3 }) => {
   const paymentDisabled =
     paymentActive || !account || amount <= 0 || details.id <= 0;
 
+//Handling the payment 
   const onPaymentClick = () => {
     if (!paymentDisabled) {
       const updatePayment = async () => {
@@ -181,6 +186,7 @@ const Contract = ({ contract, accounts, web3 }) => {
   const cancelBtnEnbled =
     details && details.id > 0 && details.buyer === account && !paymentActive;
 
+  //canceling the contract
   const onCancelClick = (e) => {
     if (cancelBtnEnbled) {
       const updatePayment = async () => {
